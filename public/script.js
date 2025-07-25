@@ -1,4 +1,9 @@
-const data = {
+const cardList = document.getElementById("card-list");
+const detail = document.getElementById("detail");
+const welcomeContent = document.getElementById("welcome-content");
+
+// JSON 데이터를 직접 포함 (data.json 내용)
+const plasticData = {
   "PET": {
     "description": "가소성, 투명 (생수병, 음료병)",
     "items": {
@@ -44,33 +49,101 @@ const data = {
   }
 };
 
-const container = document.getElementById("guide-container");
+// 카드 생성
+function createCard(type, description) {
+  const card = document.createElement("div");
+  card.className = "card";
+  card.tabIndex = 0;
 
-for (const [type, { description, items }] of Object.entries(data)) {
-  const category = document.createElement("div");
-  category.className = "category";
+  const title = document.createElement("h3");
+  title.textContent = type;
+  card.appendChild(title);
 
-  const title = document.createElement("h2");
-  title.textContent = `${type} - ${description}`;
-  category.appendChild(title);
+  const desc = document.createElement("p");
+  desc.textContent = description;
+  card.appendChild(desc);
 
-  for (const [itemName, steps] of Object.entries(items)) {
-    const itemDiv = document.createElement("div");
-    itemDiv.className = "item";
+  card.addEventListener("click", () => {
+    showDetail(type);
+    highlightCard(card);
+  });
 
-    const itemTitle = document.createElement("h3");
-    itemTitle.textContent = itemName;
-    itemDiv.appendChild(itemTitle);
-
-    const list = document.createElement("ul");
-    for (const step of steps) {
-      const li = document.createElement("li");
-      li.textContent = step;
-      list.appendChild(li);
+  card.addEventListener("keydown", e => {
+    if (e.key === "Enter" || e.key === " ") {
+      e.preventDefault();
+      card.click();
     }
-    itemDiv.appendChild(list);
-    category.appendChild(itemDiv);
+  });
+
+  return card;
+}
+
+// 카드 강조 효과
+function highlightCard(selectedCard) {
+  document.querySelectorAll(".card").forEach(card => {
+    card.classList.toggle("selected", card === selectedCard);
+  });
+}
+
+// 상세 내용 표시
+function showDetail(type) {
+  // 환영 메시지 숨기기
+  if (welcomeContent) {
+    welcomeContent.style.display = "none";
   }
 
-  container.appendChild(category);
+  // 내용 초기화
+  detail.innerHTML = "";
+
+  const dataType = plasticData[type];
+  if (!dataType) return;
+
+  // 제목 생성
+  const title = document.createElement("h2");
+  title.textContent = `${type} - ${dataType.description}`;
+  detail.appendChild(title);
+
+  // 각 아이템별 내용 생성
+  for (const [itemName, steps] of Object.entries(dataType.items)) {
+    const itemTitle = document.createElement("h3");
+    itemTitle.textContent = itemName;
+    detail.appendChild(itemTitle);
+
+    const ul = document.createElement("ul");
+    steps.forEach(step => {
+      const li = document.createElement("li");
+      li.textContent = step;
+      ul.appendChild(li);
+    });
+    detail.appendChild(ul);
+  }
 }
+
+// 초기화
+function init() {
+  try {
+    for (const [type, { description }] of Object.entries(plasticData)) {
+      const card = createCard(type, description);
+      cardList.appendChild(card);
+    }
+  } catch (error) {
+    detail.innerHTML = `<p style="color: #dc3545;">데이터를 불러오는데 실패했습니다: ${error.message}</p>`;
+  }
+}
+
+// 키보드 네비게이션
+document.addEventListener('keydown', (e) => {
+  const cards = document.querySelectorAll('.card');
+  const currentIndex = Array.from(cards).findIndex(card => card === document.activeElement);
+  
+  if (e.key === 'ArrowDown' && currentIndex < cards.length - 1) {
+    e.preventDefault();
+    cards[currentIndex + 1].focus();
+  } else if (e.key === 'ArrowUp' && currentIndex > 0) {
+    e.preventDefault();
+    cards[currentIndex - 1].focus();
+  }
+});
+
+// 페이지 로드 시 초기화
+document.addEventListener('DOMContentLoaded', init);

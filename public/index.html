@@ -2,9 +2,9 @@
 <html lang="ko">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>플라스틱 재활용 가이드</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
@@ -12,7 +12,17 @@
     <p>플라스틱 종류별로 업사이클링 아이디어를 확인해보세요!</p>
   </header>
 
-  <main id="guide-container"></main>
+  <main>
+    <section id="card-list"></section>
+    <section id="detail">
+      <div id="welcome-content">
+        <div class="welcome-icon">🌱</div>
+        <p id="welcome-text">
+          왼쪽 플라스틱 종류 카드를 선택하면<br>자세한 업사이클링 방법을 보여줍니다.
+        </p>
+      </div>
+    </section>
+  </main>
 
   <footer>
     <p>© 2025 환경을 생각하는 멧데이먼</p>
